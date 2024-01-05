@@ -1,20 +1,51 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { useState } from "react";
+import { StyleSheet, View, Button, FlatList } from "react-native";
+
+import GoalItem from "./components/GoalItem.component";
+import GoalInput from "./components/GoalInput.component";
 
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+	const [courseGoals, setCourseGoals] = useState([]);
+
+	const addGoalHandler = (enteredGoalText) => {
+		setCourseGoals((currentCourseGoals) => [
+			...currentCourseGoals,
+			{ text: enteredGoalText, key: Math.random().toString() },
+		]);
+	};
+
+	const deleteGoalHandler = (key) => {
+		setCourseGoals((currentCourseGoals) => {
+			return currentCourseGoals.filter((goal) => goal.key !== key);
+		});
+	};
+
+	return (
+		<View style={styles.appContainer}>
+			<GoalInput onAddGoal={addGoalHandler} />
+			<View style={styles.goalsContainer}>
+				<FlatList
+					data={courseGoals}
+					renderItem={(itemData) => {
+						return (
+							<GoalItem onDeleteItem={deleteGoalHandler} id={itemData.item.key}>
+								{itemData.item.text}
+							</GoalItem>
+						);
+					}}
+				/>
+			</View>
+		</View>
+	);
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+	appContainer: {
+		flex: 1,
+		paddingTop: 50,
+		paddingHorizontal: 16,
+	},
+	goalsContainer: {
+		flex: 10,
+	},
 });
